@@ -13,7 +13,7 @@ variables:
 stages:
 - stage: 'Build'
   displayName: 'Build the web application'
-  jobs: 
+  jobs:
   - job: 'Build'
     displayName: 'Build job'
     pool:
@@ -32,13 +32,14 @@ stages:
         version: '$(dotnetSdkVersion)'
 
     - task: NodeTool@0
+      displayName: 'Install Node.js'
       inputs:
         versionSpec: '14.x'
-      displayName: 'Install Node.js'
 
     - task: Npm@1
       displayName: 'Run npm install'
       inputs:
+        command: 'install'
         verbose: false
 
     - script: './node_modules/.bin/node-sass $(wwwrootDir) --output $(wwwrootDir)'
@@ -55,20 +56,20 @@ stages:
       displayName: 'Restore project dependencies'
       inputs:
         command: 'restore'
-        projects: '*/.csproj'
+        projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
 
     - task: DotNetCoreCLI@2
       displayName: 'Build the project - $(buildConfiguration)'
       inputs:
         command: 'build'
         arguments: '--no-restore --configuration $(buildConfiguration)'
-        projects: '*/.csproj'
+        projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
 
     - task: DotNetCoreCLI@2
       displayName: 'Publish the project - $(buildConfiguration)'
       inputs:
         command: 'publish'
-        projects: '*/.csproj'
+        projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
         publishWebProjects: false
         arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
